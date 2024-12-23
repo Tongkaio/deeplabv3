@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定义要处理的图像文件列表
-IMAGES=(A021.jpg A083.jpg C166.jpg C033.jpg)
+IMAGES=(A021.jpg A061.jpg A083.jpg B027.jpg B055.jpg B186.jpg C018.jpg C033.jpg C166.jpg)
 
 # 遍历图像文件列表
 for IMG in "${IMAGES[@]}"; do

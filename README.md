@@ -19,22 +19,33 @@ python predict.py --input datasets/data/VOC_GroundCover/JPEGImages/C018.jpg  --d
 
 测试结果图：
 <div>
-<img src="./samples/A021.jpg"  width="20%">
-<img src="./samples/A021.png"  width="20%">
-<img src="./samples/C018.jpg"  width="20%">
-<img src="./samples/C018.png"  width="20%">
+<img src="./samples/A021.jpg"  width="15%">
+<img src="./samples/A021.png"  width="15%">
+<img src="./samples/B027.jpg"  width="15%">
+<img src="./samples/B027.png"  width="15%">
+<img src="./samples/C018.jpg"  width="15%">
+<img src="./samples/C018.png"  width="15%">
 </div>
 
 <div>
-<img src="./samples/A061.jpg"  width="20%">
-<img src="./samples/A061.png"  width="20%">
-<img src="./samples/C033.jpg"  width="20%">
-<img src="./samples/C033.png"  width="20%">
+<img src="./samples/A061.jpg"  width="15%">
+<img src="./samples/A061.png"  width="15%">
+<img src="./samples/B186.jpg"  width="15%">
+<img src="./samples/B186.png"  width="15%">
+<img src="./samples/C033.jpg"  width="15%">
+<img src="./samples/C033.png"  width="15%">
 </div>
 
 <div>
-<img src="./samples/A083.jpg"  width="20%">
-<img src="./samples/A083.png"  width="20%">
-<img src="./samples/C166.jpg"  width="20%">
-<img src="./samples/C166.png"  width="20%">
+<img src="./samples/A083.jpg"  width="15%">
+<img src="./samples/A083.png"  width="15%">
+<img src="./samples/B055.jpg"  width="15%">
+<img src="./samples/B055.png"  width="15%">
+<img src="./samples/C166.jpg"  width="15%">
+<img src="./samples/C166.png"  width="15%">
 </div>
+
+目前已用的数据增强：
+1. RandomScale
+2. RandomCrop
+3. RandomHorizontalFlip

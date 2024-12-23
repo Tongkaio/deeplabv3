@@ -11,6 +11,7 @@ from torchvision.datasets.utils import download_url, check_integrity
 
 CLASSES = {
     'stripe',  # 条纹塑料布
+    'green',   # 绿色防尘网
     'black'    # 黑色防晒网
 }
 
