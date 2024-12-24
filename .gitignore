@@ -1,5 +1,6 @@
 __pycache__
 VOCdevkit
+VOC_GroundCover
 checkpoints
 .vscode
 *.pyc
@@ -8,4 +9,5 @@ __pycache__
 results
 checkpoints_bak
 cityscapes
+test
 test_results

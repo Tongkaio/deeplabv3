@@ -36,22 +36,25 @@ def voc_cmap(N=256, normalized=False):
     return cmap
 
 class VOCGC_Segmentation(data.Dataset):
-    """塑料布, 防晒网数据集.
+    """塑料布, 防尘网, 防晒网数据集.
     Args:
         root (string): 数据集根目录
         image_set (string, optional): Select the image_set to use, ``train``, ``trainval`` or ``val``
         transform (callable, optional): A function/transform that  takes in an PIL image
+        mix_labels (bool, optional): 是否将所有类别混合为一种类别(前景)
             and returns a transformed version. E.g, ``transforms.RandomCrop``
     """
     cmap = voc_cmap()
     def __init__(self,
                  root,
                  image_set='train',
+                 mix_labels=False,
                  transform=None):
 
         self.root = os.path.expanduser(root)
         self.transform = transform
         self.image_set = image_set
+        self.mix_labels = mix_labels
 
         voc_root = os.path.join(self.root, 'VOC_GroundCover')
         image_dir = os.path.join(voc_root, 'JPEGImages')
@@ -85,6 +88,13 @@ class VOCGC_Segmentation(data.Dataset):
         """
         img = Image.open(self.images[index]).convert('RGB')
         target = Image.open(self.masks[index])
+
+        if self.mix_labels:
+            target = np.array(target)
+            target[target != 0] = 1
+            target = Image.fromarray(target.astype(np.uint8), mode='P')
+            target.putpalette(VOCGC_Segmentation.cmap.astype(np.uint8).flatten())
+
         if self.transform is not None:
             img, target = self.transform(img, target)
 

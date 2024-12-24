@@ -28,6 +28,7 @@ def get_argparser():
                         help="path to a single image or image directory")
     parser.add_argument("--dataset", type=str, default='voc_gc',
                         choices=['voc', 'cityscapes', 'voc_gc'], help='Name of training set')
+    parser.add_argument("--mix_labels", action='store_true', default=False)
 
     # Deeplab Options
     available_models = sorted(name for name in network.modeling.__dict__ if name.islower() and \
@@ -61,7 +62,7 @@ def get_argparser():
 def main():
     opts = get_argparser().parse_args()
     if opts.dataset.lower() == 'voc_gc':
-        opts.num_classes = 4
+        opts.num_classes = 2 if opts.mix_labels else 4
         decode_fn = VOCGC_Segmentation.decode_target
     if opts.dataset.lower() == 'voc':
         opts.num_classes = 21

@@ -5,13 +5,30 @@
 2) B*: 绿色防尘网, 类别2
 3) C*: 黑色防晒网, 类别3
 """
-
-from PIL import Image
 import os
+import numpy as np
+from PIL import Image
 from tqdm import tqdm
 
-class BreakLoopException(Exception):
-    pass
+def voc_cmap(N=256, normalized=False):
+    def bitget(byteval, idx):
+        return ((byteval & (1 << idx)) != 0)
+
+    dtype = 'float32' if normalized else 'uint8'
+    cmap = np.zeros((N, 3), dtype=dtype)
+    for i in range(N):
+        r = g = b = 0
+        c = i
+        for j in range(8):
+            r = r | (bitget(c, 0) << 7-j)
+            g = g | (bitget(c, 1) << 7-j)
+            b = b | (bitget(c, 2) << 7-j)
+            c = c >> 3
+
+        cmap[i] = np.array([r, g, b])
+
+    cmap = cmap/255 if normalized else cmap
+    return cmap
 
 def letter_to_number(letter):
     """将字母 A~Z 转换为 1~26"""
@@ -29,6 +46,8 @@ if __name__ == '__main__':
         os.makedirs(output_folder)
 
     image_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]  # 获取文件夹中的所有图像文件
+    
+    cmap = voc_cmap()
 
     for image_file in tqdm(image_files, desc="Processing images", unit="image"):
         image_path = os.path.join(input_folder, image_file)
@@ -38,15 +57,10 @@ if __name__ == '__main__':
         
         num = letter_to_number(image_file[0])
 
-        try:
-            for i in range(image.width):
-                for j in range(image.height):
-                    if pixels[i, j] != 0 and pixels[i, j] != num:
-                        pixels[i, j] = num
-                    elif pixels[i, j] == num:
-                        raise BreakLoopException
-        except BreakLoopException:
-            pass
+        image = np.array(image)
+        image[image != 0] = num
+        image = Image.fromarray(image.astype(np.uint8), mode='P')
+        image.putpalette(cmap.astype(np.uint8).flatten())
 
         output_image_path = os.path.join(output_folder, image_file)
         image.save(output_image_path)

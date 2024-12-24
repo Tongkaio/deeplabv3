@@ -28,6 +28,7 @@ def get_argparser():
                         help="path to Dataset")
     parser.add_argument("--dataset", type=str, default='voc_gc',
                         choices=['voc', 'cityscapes', 'voc_gc'], help='Name of dataset')
+    parser.add_argument("--mix_labels", action='store_true', default=False)
     parser.add_argument("--num_classes", type=int, default=None,
                         help="num classes (default: None)")
 
@@ -123,8 +124,8 @@ def get_dataset(opts):
                 et.ExtNormalize(mean=[0.485, 0.456, 0.406],
                                 std=[0.229, 0.224, 0.225]),
             ])
-        train_dst = VOCGC_Segmentation(root=opts.data_root, image_set='train', transform=train_transform)
-        val_dst = VOCGC_Segmentation(root=opts.data_root, image_set='val', transform=val_transform)
+        train_dst = VOCGC_Segmentation(root=opts.data_root, image_set='train', mix_labels=opts.mix_labels, transform=train_transform)
+        val_dst = VOCGC_Segmentation(root=opts.data_root, image_set='val', mix_labels=opts.mix_labels, transform=val_transform)
 
     if opts.dataset == 'voc':
         train_transform = et.ExtCompose([
@@ -238,7 +239,7 @@ def validate(opts, model, loader, device, metrics, ret_samples_ids=None):
 def main():
     opts = get_argparser().parse_args()
     if  opts.dataset.lower() == 'voc_gc':
-        opts.num_classes = 4
+        opts.num_classes = 2 if opts.mix_labels else 4
     elif opts.dataset.lower() == 'voc':
         opts.num_classes = 21
     elif opts.dataset.lower() == 'cityscapes':
@@ -377,8 +378,9 @@ def main():
                 interval_loss = 0.0
 
             if (cur_itrs) % opts.val_interval == 0:
-                save_ckpt('checkpoints/latest_%s_%s_os%d.pth' %
-                          (opts.model, opts.dataset, opts.output_stride))
+                mix_suffix = "_mix" if opts.mix_labels else ""
+                save_ckpt('checkpoints/latest_%s_%s%s_os%d.pth' %
+                          (opts.model, opts.dataset, mix_suffix, opts.output_stride))
                 print("validation...")
                 model.eval()
                 val_score, ret_samples = validate(
@@ -387,8 +389,8 @@ def main():
                 print(metrics.to_str(val_score))
                 if val_score['Mean IoU'] > best_score:  # save best model
                     best_score = val_score['Mean IoU']
-                    save_ckpt('checkpoints/best_%s_%s_os%d.pth' %
-                              (opts.model, opts.dataset, opts.output_stride))
+                    save_ckpt('checkpoints/best_%s_%s%s_os%d.pth' %
+                              (opts.model, opts.dataset, mix_suffix, opts.output_stride))
 
                 if vis is not None:  # visualize validation score and samples
                     vis.vis_scalar("[Val] Overall Acc", cur_itrs, val_score['Overall Acc'])
